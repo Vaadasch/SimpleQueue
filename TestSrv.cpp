@@ -19,7 +19,7 @@ int main()
 
         std::string newStr = "OkSrv:" + msg;
         std::cout << "\nSending msg\n";
-        q.sendMsg(&newStr[0]);
+        q.sendMsg(newStr);
         std::cout << "\nMsg sent\n";
     }
 
