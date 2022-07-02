@@ -28,7 +28,7 @@ public:
 	SimpleQueue(std::string typeAsked);
 	SimpleQueue();
 	void close();
-	void sendMsg(char* msg);
+	void sendMsg(std::string msg);
 	std::string rcvMsg(int wait = 0);
 	std::string waitMsg();
 	bool waitClient();
