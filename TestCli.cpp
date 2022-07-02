@@ -12,7 +12,7 @@ int main()
     while (cmd != "stop") {
         std::cout << "Please enter command\n";
         std::cin >> cmd;
-        q.sendMsg(&cmd[0]);
+        q.sendMsg(cmd);
         std::cout << "Wait For Reply\n";
         std::string resp = q.waitMsg();
 
