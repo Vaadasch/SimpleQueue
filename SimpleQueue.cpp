@@ -46,9 +46,9 @@ SimpleQueue::SimpleQueue(std::string typeAsked) {
 void SimpleQueue::initSrv() {
     int iResult = bind(socket.s, (SOCKADDR*)&service, sizeof(service));
     if (iResult == SOCKET_ERROR) {
-        close();
         throw std::runtime_error("bind socket function failed with error  " + std::to_string(WSAGetLastError()));
-    }
+        close();
+   }
     //----------------------
     // Listen for incoming connection requests 
     // on the created socket
