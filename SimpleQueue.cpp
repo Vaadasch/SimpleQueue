@@ -89,8 +89,9 @@ void SimpleQueue::initCli() {
 void SimpleQueue::sendMsg(std::string msg) {
     int iResult = send(connected_socket.s, &msg[0], (int)strlen(&msg[0]), 0);
     if (iResult == SOCKET_ERROR) {
+        int errCode = WSAGetLastError();
         close();
-        throw std::runtime_error("sendMsg function failed with error: " + std::to_string(WSAGetLastError()));
+        throw std::runtime_error("sendMsg function failed with error: " + std::to_string(errCode));
     }
 }
 
