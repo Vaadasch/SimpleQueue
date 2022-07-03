@@ -23,8 +23,9 @@ SimpleQueue::SimpleQueue(std::string typeAsked) {
 
     socket.s = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (socket.s == INVALID_SOCKET) {
+        int errCode = WSAGetLastError();
         WSACleanup();
-        throw std::runtime_error("socket function failed with error = " + std::to_string(WSAGetLastError()));
+        throw std::runtime_error("socket socket function failed with error = " + std::to_string(errCode));
     }
 
     //----------------------
@@ -46,8 +47,10 @@ SimpleQueue::SimpleQueue(std::string typeAsked) {
 void SimpleQueue::initSrv() {
     int iResult = bind(socket.s, (SOCKADDR*)&service, sizeof(service));
     if (iResult == SOCKET_ERROR) {
-        throw std::runtime_error("bind socket function failed with error  " + std::to_string(WSAGetLastError()));
+        int errCode = WSAGetLastError();
         close();
+        throw std::runtime_error("bind socket function failed with error  " + std::to_string(errCode()));
+        
    }
     //----------------------
     // Listen for incoming connection requests 
@@ -106,10 +109,9 @@ std::string SimpleQueue::rcvMsg(int wait) {
     memset(recvbuff, 0, 512);
     int iResult = recv(connected_socket.s, recvbuff, 512, 0);
     if (iResult == SOCKET_ERROR) {
-        std::cout << "SOCKET_ERROR :";
-        std::cout << std::to_string(WSAGetLastError());
+        int errCode = WSAGetLastError();
         close();
-        throw std::runtime_error("sendMsg function failed with error: " + std::to_string(WSAGetLastError()));
+        throw std::runtime_error("recv function failed with error: " + std::to_string(errCode));
     }
     return (std::string)recvbuff;
 }
