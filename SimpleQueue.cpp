@@ -3,6 +3,7 @@
 #include <iostream>
 
 using std::string ; using std::to_string;
+
 using std::runtime_error;
 
 SimpleQueue::SimpleQueue() : SimpleQueue("find") {}
