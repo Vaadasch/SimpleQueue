@@ -8,6 +8,9 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <string> 
+#include <iostream>
+#include <sstream>
+#include <iomanip>
 
 #define PORT 21612
 
@@ -37,6 +40,7 @@ public:
 private:
 	void initSrv();
 	void initCli();
+	std::string getMsg(int bufflen);
 };
 
 
