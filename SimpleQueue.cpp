@@ -1,9 +1,7 @@
 #pragma comment(lib,"Ws2_32.lib")
 #include "SimpleQueue.h"
-#include <iostream>
 
-using std::string ; using std::to_string;
-
+using std::string; using std::to_string;
 using std::runtime_error;
 
 SimpleQueue::SimpleQueue() : SimpleQueue("find") {}
@@ -54,8 +52,8 @@ void SimpleQueue::initSrv() {
         int errCode = WSAGetLastError();
         close();
         throw runtime_error("bind socket function failed with error  " + to_string(errCode));
-        
-   }
+
+    }
     //----------------------
     // Listen for incoming connection requests 
     // on the created socket
@@ -71,7 +69,7 @@ bool SimpleQueue::acceptClient(int wait) {
     if (dwEvent == WSA_WAIT_FAILED)
         throw runtime_error("WSAWaitForMultipleEvents failed: " + to_string(WSAGetLastError()));
     if (dwEvent == WSA_WAIT_TIMEOUT) return FALSE;
-    
+
     connected_socket.s = accept(socket.s, NULL, NULL);
     if (connected_socket.s == INVALID_SOCKET)
         throw runtime_error("accept failed: " + to_string(WSAGetLastError()));
@@ -94,12 +92,30 @@ void SimpleQueue::initCli() {
 }
 
 void SimpleQueue::sendMsg(string msg) {
-    int iResult = send(connected_socket.s, &msg[0], (int)strlen(&msg[0]), 0);
+    int msgLen = (int)strlen(&msg[0]);
+    std::stringstream sstream;
+    sstream << std::setfill('0') << std::setw(2) << std::hex << msgLen;
+    msg = sstream.str() + msg;
+    msgLen = (int)strlen(&msg[0]);
+    int iResult = send(connected_socket.s, &msg[0], msgLen, 0);
     if (iResult == SOCKET_ERROR) {
         int errCode = WSAGetLastError();
         close();
         throw runtime_error("sendMsg function failed with error: " + to_string(errCode));
     }
+}
+
+string SimpleQueue::getMsg(int bufflen) {
+    CHAR recvbuff[512];
+    memset(recvbuff, 0, 512);
+    int iResult = recv(connected_socket.s, recvbuff, bufflen, 0);
+    if (iResult == SOCKET_ERROR) {
+        int errCode = WSAGetLastError();
+        close();
+        throw runtime_error("recv function failed with error: " + to_string(errCode));
+    }
+    return (string)recvbuff;
+
 }
 
 string SimpleQueue::rcvMsg(int wait) {
@@ -109,15 +125,10 @@ string SimpleQueue::rcvMsg(int wait) {
     }
     if (dwEvent == WSA_WAIT_TIMEOUT) return "";
     WSAResetEvent(connected_socket.hEvent);
-    CHAR recvbuff[512];
-    memset(recvbuff, 0, 512);
-    int iResult = recv(connected_socket.s, recvbuff, 512, 0);
-    if (iResult == SOCKET_ERROR) {
-        int errCode = WSAGetLastError();
-        close();
-        throw runtime_error("recv function failed with error: " + to_string(errCode));
-    }
-    return (string)recvbuff;
+    string msgLenStr = getMsg(2);
+    int msgLen = std::strtoll(&msgLenStr[0], 0, 16);
+    WSAResetEvent(connected_socket.hEvent);
+    return getMsg(msgLen);
 }
 
 string SimpleQueue::waitMsg() { return rcvMsg(WSA_INFINITE); }
