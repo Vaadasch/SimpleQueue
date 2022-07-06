@@ -1,22 +1,25 @@
 #include <iostream>
 #include "SimpleQueue.h"
 
+using std::cout; using std::cin;
+using std::string;
 
 int main()
 {   
     SimpleQueue q = SimpleQueue("client");
 
-    std::string cmd;
-    std::cout << "Hello World!\n";
+    string cmd;
+    cout << "Hello World!\n";
     
     while (cmd != "stop") {
-        std::cout << "Please enter command\n";
-        std::cin >> cmd;
+        cout << "Please enter command\n";
+        //std::cin >> cmd;
+        getline(cin, cmd);
         q.sendMsg(cmd);
-        std::cout << "Wait For Reply\n";
-        std::string resp = q.waitMsg();
+        cout << "Wait For Reply\n";
+        string resp = q.waitMsg();
 
-        std::cout << "Message received : " << resp << "\n\n\n";
+        cout << "Message received : " << resp << "\n\n\n";
 
     }
 
